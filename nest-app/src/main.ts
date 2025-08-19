@@ -30,10 +30,10 @@ async function bootstrap() {
         description: 'Enter JWT token',
         in: 'header',
       },
-      'JWT-auth', // This name should match the one used in @ApiBearerAuth() in your controllers
+      'JWT-auth', 
     )
-    .addServer('http://localhost:4000', 'Local development server') // Add this
-  .setContact('Support', 'http://example.com/support', 'support@example.com')
+    .addServer('http://localhost:4000', 'Local development server')  
+    .setContact('Support', 'http://example.com/support', 'support@example.com')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

@@ -4,7 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { User, UserSchema } from './schemas/user.schema';
-import { AdminSeederService } from './admin.seeder.service';
+import { AdminSeederService } from '../admin/admin.seeder.service';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({

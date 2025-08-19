@@ -1,15 +1,19 @@
-//nest-app\src\auth\auth.service.ts
+// src/auth/auth.service.ts
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { User } from '../users/schemas/user.schema';
+import { Token } from './schemas/token.schema';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    @InjectModel(Token.name) private tokenModel: Model<Token>,
   ) {}
 
   async validateUser(email: string, pass: string): Promise<any> {
@@ -28,13 +32,37 @@ export class AuthService {
       name: user.name,
       role: user.role  
     };
+    
+    const accessToken = this.jwtService.sign(payload);
+    
+    // Store token in database
+    await this.tokenModel.create({
+      userId: user._id,
+      token: accessToken,
+      role: user.role,
+      isActive: true,
+      expiresAt: new Date(Date.now() + 3600 * 1000) // Example: 1 hour expiration
+    });
+
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: accessToken,
     };
   }
 
-  async logout() {
-    // In a real app, you might blacklist the token here
+  async logout(token: string) {
+    // Deactivate the token
+    await this.tokenModel.findOneAndUpdate(
+      { token },
+      { isActive: false }
+    );
     return { message: 'Logged out successfully' };
+  }
+
+  async validateToken(token: string) {
+    return this.tokenModel.findOne({ 
+      token, 
+      isActive: true,
+      expiresAt: { $gt: new Date() } 
+    });
   }
 }
