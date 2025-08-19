@@ -1,5 +1,3 @@
-
-// nest-app/src/main.ts
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
@@ -8,14 +6,12 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Global validation pipe for class-validator
   app.useGlobalPipes(new ValidationPipe({
-    whitelist: true, // Remove non-whitelisted properties
-    forbidNonWhitelisted: true, // Throw errors for non-whitelisted properties
-    transform: true, // Automatically transform payloads to DTO instances
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
   }));
 
-  // Swagger configuration
   const config = new DocumentBuilder()
     .setTitle('User Management API')
     .setDescription('API for managing users with CRUD operations')
@@ -26,21 +22,62 @@ async function bootstrap() {
         type: 'http', 
         scheme: 'bearer', 
         bearerFormat: 'JWT',
-        name: 'JWT',
-        description: 'Enter JWT token',
+        name: 'Authorization',
+        description: 'Enter JWT token (without Bearer prefix)',
         in: 'header',
       },
-      'JWT-auth', 
+      'JWT-auth',
     )
-    .addServer('http://localhost:4000', 'Local development server')  
+    .addServer('http://localhost:4000', 'Local development server')
     .setContact('Support', 'http://example.com/support', 'support@example.com')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
+  
   SwaggerModule.setup('api', app, document, {
     swaggerOptions: {
-      persistAuthorization: true, // This will persist the authorization token
+      persistAuthorization: true,
+      requestInterceptor: (req) => {
+        if (req.headers?.Authorization && !req.headers.Authorization.startsWith('Bearer ')) {
+          req.headers.Authorization = `Bearer ${req.headers.Authorization}`;
+        }
+        return req;
+      },
+      authAction: {
+        'JWT-auth': {
+          name: 'JWT-auth',
+          schema: {
+            type: 'apiKey',
+            in: 'header',
+            name: 'Authorization',
+            description: 'Enter JWT token (without Bearer prefix)',
+          },
+        },
+      },
     },
+    customSiteTitle: 'User Management API',
+    customJs: `
+      window.onload = function() {
+        // Update placeholder text
+        const authInputs = document.querySelectorAll('input[placeholder*="Enter JWT token"]');
+        authInputs.forEach(input => {
+          input.placeholder = "Paste token here (no 'Bearer' needed)";
+        });
+        
+        // Auto-add Bearer prefix when authorizing
+        document.addEventListener('click', function(e) {
+          if (e.target.classList.contains('btn') {
+            const authBtn = e.target.closest('.auth-btn');
+            if (authBtn) {
+              const input = authBtn.querySelector('input');
+              if (input && input.value && !input.value.startsWith('Bearer ')) {
+                input.value = 'Bearer ' + input.value;
+              }
+            }
+          }
+        });
+      }
+    `,
   });
 
   const port = process.env.PORT ?? 4000;

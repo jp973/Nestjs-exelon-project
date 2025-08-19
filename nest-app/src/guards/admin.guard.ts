@@ -1,20 +1,20 @@
 // src/guards/admin.guard.ts
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
-import { Observable } from 'rxjs';
-//import { GqlExecutionContext } from '@nestjs/graphql';
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 
 @Injectable()
 export class AdminGuard implements CanActivate {
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
     
     if (!user) {
-      return false;
+      throw new UnauthorizedException('No authentication information found');
     }
 
-    return user.role === 'admin';
+    if (user.role !== 'admin') {
+      throw new UnauthorizedException('Administrator privileges required');
+    }
+
+    return true;
   }
 }
