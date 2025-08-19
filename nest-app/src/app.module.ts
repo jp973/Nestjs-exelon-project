@@ -1,14 +1,12 @@
+//nest-app\src\app.module.ts
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
-import { TweetModule } from './tweet/tweet.module';
-import { UsersController } from './users/users.controller';
-import { TweetController } from './tweet/tweet.controller';
-
-@Module({
+import { AuthModule } from './auth/auth.module';
+ @Module({
   imports: [
       ConfigModule.forRoot({
       isGlobal: true,
@@ -17,23 +15,20 @@ import { TweetController } from './tweet/tweet.controller';
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGO_URI'),
-        dbName: configService.get<string>('MONGO_DB_NAME'),
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        retryAttempts: 5,
-        retryDelay: 1000,
+  uri: configService.get<string>('MONGO_URI'),
+  dbName: configService.get<string>('MONGO_DB_NAME'),
+  retryAttempts: 5,
+  retryDelay: 1000,
       }),
       inject: [ConfigService],
     }),
     
     UsersModule,
-    TweetModule,
+    
+    AuthModule,
   ],
   controllers: [
     AppController,
-    TweetController,
-    UsersController,
   ],
   providers: [AppService],
 })
