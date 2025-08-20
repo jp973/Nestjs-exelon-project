@@ -50,19 +50,13 @@ export class AuthService {
   }
 
   async logout(token: string) {
-    // Deactivate the token
-    await this.tokenModel.findOneAndUpdate(
-      { token },
-      { isActive: false }
-    );
-    return { message: 'Logged out successfully' };
+  // Remove the token from DB
+  const result = await this.tokenModel.findOneAndDelete({ token });
+
+  if (!result) {
+    throw new UnauthorizedException('Invalid token or already logged out');
   }
 
-  async validateToken(token: string) {
-    return this.tokenModel.findOne({ 
-      token, 
-      isActive: true,
-      expiresAt: { $gt: new Date() } 
-    });
-  }
+  return { message: 'Logged out successfully' };
+}
 }

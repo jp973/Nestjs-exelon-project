@@ -3,7 +3,7 @@ import { Controller, Post, Body, UseGuards, Req, Headers } from '@nestjs/common'
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from '../guards/local-auth.guard';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags, ApiHeader } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags, ApiHeader, ApiBearerAuth } from '@nestjs/swagger';
 import { LoginDto } from '../dto/login.dto';
 
 @ApiTags('auth')
@@ -41,17 +41,16 @@ export class AuthController {
     };
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('logout')
-  @ApiOperation({ summary: 'User logout' })
-  @ApiHeader({ name: 'Authorization', description: 'Bearer token' })
-  @ApiResponse({ status: 200, description: 'Logout successful' })
-  async logout(@Headers('authorization') authHeader: string) {
-    const token = authHeader.split(' ')[1];
-    await this.authService.logout(token);
-    return {
-      statusCode: 200,
-      message: 'Logged out successfully'
-    };
-  }
+    
+@ApiBearerAuth('JWT-auth')
+@Post('logout')
+@UseGuards(JwtAuthGuard)
+@ApiOperation({ summary: 'User logout' })
+@ApiResponse({ status: 200, description: 'Logout successful' })
+async logout(@Req() req) {
+  const token = req.headers['authorization']?.split(' ')[1];
+  await this.authService.logout(token);
+  return { statusCode: 200, message: 'Logged out successfully' };
+}
+
 }
