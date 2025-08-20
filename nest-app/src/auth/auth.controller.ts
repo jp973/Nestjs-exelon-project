@@ -9,14 +9,14 @@ import { LoginDto } from '../dto/login.dto';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @ApiOperation({ summary: 'User login' })
   @ApiBody({ type: LoginDto })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Login successful',
     schema: {
       example: {
@@ -41,16 +41,15 @@ export class AuthController {
     };
   }
 
-    
-@ApiBearerAuth('JWT-auth')
-@Post('logout')
-@UseGuards(JwtAuthGuard)
-@ApiOperation({ summary: 'User logout' })
-@ApiResponse({ status: 200, description: 'Logout successful' })
-async logout(@Req() req) {
-  const token = req.headers['authorization']?.split(' ')[1];
-  await this.authService.logout(token);
-  return { statusCode: 200, message: 'Logged out successfully' };
-}
+  @ApiBearerAuth('JWT-auth')
+  @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'User logout' })
+  @ApiResponse({ status: 200, description: 'Logout successful' })
+  async logout(@Req() req) {
+    const token = req.headers['authorization']?.split(' ')[1];
+    await this.authService.logout(token);
+    return { statusCode: 200, message: 'Logged out successfully' };
+  }
 
 }

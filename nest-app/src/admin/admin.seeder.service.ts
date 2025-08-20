@@ -12,7 +12,7 @@ export class AdminSeederService implements OnModuleInit {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     private configService: ConfigService,
-  ) {}
+  ) { }
 
   async onModuleInit() {
     await this.seedAdmin();
@@ -26,9 +26,9 @@ export class AdminSeederService implements OnModuleInit {
       role: 'admin' // Explicitly set role to admin
     };
 
-    const existingAdmin = await this.userModel.findOne({ 
+    const existingAdmin = await this.userModel.findOne({
       email: adminData.email,
-      role: 'admin' 
+      role: 'admin'
     });
 
     if (!existingAdmin) {

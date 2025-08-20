@@ -6,25 +6,25 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
- @Module({
+@Module({
   imports: [
-      ConfigModule.forRoot({
+    ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-  uri: configService.get<string>('MONGO_URI'),
-  dbName: configService.get<string>('MONGO_DB_NAME'),
-  retryAttempts: 5,
-  retryDelay: 1000,
+        uri: configService.get<string>('MONGO_URI'),
+        dbName: configService.get<string>('MONGO_DB_NAME'),
+        retryAttempts: 5,
+        retryDelay: 1000,
       }),
       inject: [ConfigService],
     }),
-    
+
     UsersModule,
-    
+
     AuthModule,
   ],
   controllers: [
@@ -32,4 +32,4 @@ import { AuthModule } from './auth/auth.module';
   ],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

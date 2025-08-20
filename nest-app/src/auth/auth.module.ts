@@ -29,4 +29,4 @@ import { Token, TokenSchema } from './schemas/token.schema';
   controllers: [AuthController],
   exports: [AuthService],
 })
-export class AuthModule {}
+export class AuthModule { }

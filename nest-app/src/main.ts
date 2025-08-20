@@ -18,9 +18,9 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('users')
     .addBearerAuth(
-      { 
-        type: 'http', 
-        scheme: 'bearer', 
+      {
+        type: 'http',
+        scheme: 'bearer',
         bearerFormat: 'JWT',
         name: 'Authorization',
         description: 'Enter JWT token (without Bearer prefix)',
@@ -33,7 +33,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  
+
   SwaggerModule.setup('api', app, document, {
     swaggerOptions: {
       persistAuthorization: true,
@@ -82,7 +82,7 @@ async function bootstrap() {
 
   const port = process.env.PORT ?? 4000;
   await app.listen(port);
-  
+
   console.log(`Application is running on: http://localhost:${port}`);
   console.log(`Swagger documentation available at: http://localhost:${port}/api`);
 }

@@ -9,7 +9,7 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(@InjectModel(User.name) private userModel: Model<User>) { }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
@@ -24,35 +24,35 @@ export class UsersService {
     return this.userModel.find().exec();
   }
 
- async findOne(id: string): Promise<User | null> {
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    throw new BadRequestException('Invalid user ID');
+  async findOne(id: string): Promise<User | null> {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Invalid user ID');
+    }
+    return this.userModel.findById(id).exec();
   }
-  return this.userModel.findById(id).exec();
-}
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User | null> {
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    throw new BadRequestException('Invalid user ID');
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new BadRequestException('Invalid user ID');
+    }
+    const user = await this.userModel
+      .findByIdAndUpdate(id, updateUserDto, { new: true })
+      .exec();
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
   }
-  const user = await this.userModel
-    .findByIdAndUpdate(id, updateUserDto, { new: true })
-    .exec();
-  if (!user) {
-    throw new NotFoundException('User not found');
-  }
-  return user;
-}
 
-async remove(id: string): Promise<User> {
-  const deletedUser = await this.userModel.findByIdAndDelete(id).exec();
-  if (!deletedUser) {
-    throw new Error('User not found');
+  async remove(id: string): Promise<User> {
+    const deletedUser = await this.userModel.findByIdAndDelete(id).exec();
+    if (!deletedUser) {
+      throw new Error('User not found');
+    }
+    return deletedUser;
   }
-  return deletedUser;
-}
 
-async findByEmail(email: string): Promise<User | null> {
-  return this.userModel.findOne({ email }).exec();
-}
+  async findByEmail(email: string): Promise<User | null> {
+    return this.userModel.findOne({ email }).exec();
+  }
 }

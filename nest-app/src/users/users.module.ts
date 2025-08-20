@@ -16,4 +16,4 @@ import { ConfigModule } from '@nestjs/config';
   providers: [UsersService, AdminSeederService],
   exports: [UsersService],
 })
-export class UsersModule {}
+export class UsersModule { }

@@ -8,12 +8,7 @@ import { Connection } from 'mongoose';
 export class AppService {
   private readonly logger = new Logger(AppService.name);
 
-  constructor(@InjectConnection() private connection: Connection) {}
-
-  getHello(): string {
-    this.logger.log(`MongoDB connection state: ${this.connection.readyState}`);
-    return 'Hello World!';
-  }
+  constructor(@InjectConnection() private connection: Connection) { }
 
   checkDBConnection(): { status: string, readyState: number } {
     const isConnected = this.connection.readyState === 1;

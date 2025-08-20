@@ -14,7 +14,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     @InjectModel(Token.name) private tokenModel: Model<Token>,
-  ) {}
+  ) { }
 
   async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.usersService.findByEmail(email);
@@ -26,15 +26,15 @@ export class AuthService {
   }
 
   async login(user: User & { _id: Types.ObjectId }) {
-    const payload = { 
-      email: user.email, 
+    const payload = {
+      email: user.email,
       sub: user._id.toString(),
       name: user.name,
-      role: user.role  
+      role: user.role
     };
-    
+
     const accessToken = this.jwtService.sign(payload);
-    
+
     // Store token in database
     await this.tokenModel.create({
       userId: user._id,
@@ -50,13 +50,13 @@ export class AuthService {
   }
 
   async logout(token: string) {
-  // Remove the token from DB
-  const result = await this.tokenModel.findOneAndDelete({ token });
+    // Remove the token from DB
+    const result = await this.tokenModel.findOneAndDelete({ token });
 
-  if (!result) {
-    throw new UnauthorizedException('Invalid token or already logged out');
+    if (!result) {
+      throw new UnauthorizedException('Invalid token or already logged out');
+    }
+
+    return { message: 'Logged out successfully' };
   }
-
-  return { message: 'Logged out successfully' };
-}
 }
