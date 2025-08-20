@@ -1,8 +1,8 @@
 // src/auth/auth.controller.ts
 import { Controller, Post, Body, UseGuards, Req, Headers } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LocalAuthGuard } from '../guards/local-auth.guard';
-import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { LocalAuthGuard } from './guards/local-auth.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags, ApiHeader, ApiBearerAuth } from '@nestjs/swagger';
 import { LoginDto } from '../dto/login.dto';
 
