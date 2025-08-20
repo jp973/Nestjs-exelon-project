@@ -5,8 +5,6 @@ import { Model } from 'mongoose';
 import { User } from '../users/schemas/user.schema';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
-import { CreateAdminDto } from '../dto/create-admin.dto';
-
 @Injectable()
 export class AdminSeederService implements OnModuleInit {
   constructor(
