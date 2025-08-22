@@ -5,6 +5,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { SocketModule } from './sockets/socket.module';
+import { StorageModule } from './storage/storage.module';
+import { EmailController } from './email/email.controller';
+import { SendGridService } from './email/sendgrid.service';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -25,8 +28,10 @@ import { SocketModule } from './sockets/socket.module';
     UsersModule,
     AuthModule,
     SocketModule,
+    StorageModule,
+
   ],
-  controllers: [],
-  providers: [ ],
+  controllers: [EmailController],
+  providers: [SendGridService ],
 })
 export class AppModule { }

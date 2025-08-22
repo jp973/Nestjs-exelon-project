@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { User } from '../users/schemas/user.schema';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
+import { logger } from 'src/utils/logger';
 @Injectable()
 export class AdminSeederService implements OnModuleInit {
   constructor(
@@ -37,7 +38,7 @@ export class AdminSeederService implements OnModuleInit {
         isActive: true
         // No need to include ismarried, gender, age for admin
       });
-      console.log('Admin user created successfully');
+      logger.info('Admin user created successfully');
     }
   }
 }
