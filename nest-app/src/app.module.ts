@@ -2,10 +2,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { SocketModule } from './sockets/socket.module';
+import { StorageModule } from './storage/storage.module';
+import { EmailController } from './email/email.controller';
+import { SendGridService } from './email/sendgrid.service';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -24,12 +26,12 @@ import { AuthModule } from './auth/auth.module';
     }),
 
     UsersModule,
-
     AuthModule,
+    SocketModule,
+    StorageModule,
+
   ],
-  controllers: [
-    AppController,
-  ],
-  providers: [AppService],
+  controllers: [EmailController],
+  providers: [SendGridService ],
 })
 export class AppModule { }

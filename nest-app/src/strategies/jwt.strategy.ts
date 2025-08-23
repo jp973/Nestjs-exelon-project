@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
+import { logger } from 'src/utils/logger';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -16,13 +17,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   // In your simplified JwtStrategy, add this:
   async validate(payload: any) {
-    console.log('=== JWT VALIDATION ===');
-    console.log('Payload received:', payload);
-    console.log('Payload sub:', payload.sub);
-    console.log('Payload email:', payload.email);
-    console.log('Payload role:', payload.role);
-    console.log('Payload name:', payload.name);
-    console.log('======================');
+    logger.info('=== JWT VALIDATION ===');
+    logger.info('Payload received:', payload);
+    logger.info('Payload sub:', payload.sub);
+    logger.info('Payload email:', payload.email);
+    logger.info('Payload role:', payload.role);
+    logger.info('Payload name:', payload.name);
+    logger.info('======================');
 
     return {
       userId: payload.sub,
