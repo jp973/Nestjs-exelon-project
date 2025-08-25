@@ -11,8 +11,9 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { ApiResponseDto } from '../dto/response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AdminGuard } from '../auth/guards/admin.guard';
+import { CurrentUser } from '../auth/guards/current-user.decorator';
 
-@ApiTags('users')
+@ApiTags('Admin Users')
 @ApiBearerAuth('JWT-auth')
 @Controller('users')
 export class UsersController {
@@ -46,6 +47,21 @@ export class UsersController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  @ApiOperation({ summary: 'Get my profile (current authenticated user)' })
+  @ApiResponse({ status: 200, description: 'Profile retrieved successfully', type: ApiResponseDto })
+  async getMyProfile(@CurrentUser('userId') userId: string) {
+    try {
+      const profile = await this.usersService.getProfile(userId);
+      return new ApiResponseDto(HttpStatus.OK, 'Profile retrieved successfully', profile);
+    } catch (err) {
+      // Let NotFound/BadRequest bubble up if thrown by service; otherwise wrap
+      if (err.status) throw err;
+      throw new InternalServerErrorException('Failed to fetch profile');
+    }
+  }
+
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Get(':id')
   @ApiOperation({ summary: 'Get user by id' })
@@ -61,6 +77,9 @@ export class UsersController {
       throw new InternalServerErrorException('Failed to fetch user');
     }
   }
+
+
+ 
 
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Put(':id')
@@ -79,6 +98,7 @@ export class UsersController {
     }
   }
 
+  
   @UseGuards(JwtAuthGuard, AdminGuard)
   @Delete(':id')
   @ApiOperation({ summary: 'Delete user by id' })
@@ -94,4 +114,6 @@ export class UsersController {
       throw new InternalServerErrorException('Failed to delete user');
     }
   }
+
+
 }

@@ -8,6 +8,7 @@ import { SocketModule } from './sockets/socket.module';
 import { StorageModule } from './storage/storage.module';
 import { EmailController } from './email/email.controller';
 import { SendGridService } from './email/sendgrid.service';
+//import { AppController } from './app.controller';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -31,7 +32,7 @@ import { SendGridService } from './email/sendgrid.service';
     StorageModule,
 
   ],
-  controllers: [EmailController],
+  controllers: [EmailController,],//AppController
   providers: [SendGridService ],
 })
 export class AppModule { }

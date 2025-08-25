@@ -55,4 +55,19 @@ export class UsersService {
   async findByEmail(email: string): Promise<User | null> {
     return this.userModel.findOne({ email }).exec();
   }
+
+  async getProfile(userId: string): Promise<any> {
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    throw new BadRequestException('Invalid user ID');
+  }
+
+  const user = await this.userModel
+    .findById(userId)
+    .select('_id name email role createdAt updatedAt')
+    .lean()
+    .exec();
+
+  if (!user) throw new NotFoundException('User not found');
+  return user;
+}
 }

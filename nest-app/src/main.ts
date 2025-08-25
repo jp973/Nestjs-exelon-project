@@ -3,15 +3,28 @@ import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { logger } from './utils/logger';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true,
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
+
+  // RabbitMQ microservice connection
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.RMQ,
+    options: {
+      urls: ['amqp://localhost:5672'], 
+      queue: 'test_queue',
+      queueOptions: { durable: false },
+    },
+  });
 
   const config = new DocumentBuilder()
     .setTitle('User Management API')
@@ -39,7 +52,10 @@ async function bootstrap() {
     swaggerOptions: {
       persistAuthorization: true,
       requestInterceptor: (req) => {
-        if (req.headers?.Authorization && !req.headers.Authorization.startsWith('Bearer ')) {
+        if (
+          req.headers?.Authorization &&
+          !req.headers.Authorization.startsWith('Bearer ')
+        ) {
           req.headers.Authorization = `Bearer ${req.headers.Authorization}`;
         }
         return req;
@@ -59,29 +75,18 @@ async function bootstrap() {
     customSiteTitle: 'User Management API',
     customJs: `
       window.onload = function() {
-        // Update placeholder text
         const authInputs = document.querySelectorAll('input[placeholder*="Enter JWT token"]');
         authInputs.forEach(input => {
           input.placeholder = "Paste token here (no 'Bearer' needed)";
-        });
-        
-        // Auto-add Bearer prefix when authorizing
-        document.addEventListener('click', function(e) {
-          if (e.target.classList.contains('btn') {
-            const authBtn = e.target.closest('.auth-btn');
-            if (authBtn) {
-              const input = authBtn.querySelector('input');
-              if (input && input.value && !input.value.startsWith('Bearer ')) {
-                input.value = 'Bearer ' + input.value;
-              }
-            }
-          }
         });
       }
     `,
   });
 
   const port = process.env.PORT ?? 4000;
+
+  // Start both HTTP app and RabbitMQ microservice
+  //await app.startAllMicroservices();
   await app.listen(port);
 
   logger.info(`Application is running on: http://localhost:${port}`);
