@@ -8,7 +8,10 @@ export class Token extends Document {
   userId: Types.ObjectId;
 
   @Prop({ required: true })
-  token: string;
+  accessToken: string;
+
+  @Prop()
+  refreshToken: string;
 
   @Prop({ required: true, enum: ['user', 'admin'] })
   role: string;
@@ -17,15 +20,16 @@ export class Token extends Document {
   isActive: boolean;
 
   @Prop({ required: true })
-  expiresAt: Date;
+  expiresAt: Date; // logical expiry for access token (no TTL)
 
-  @Prop({ default: Date.now })
-  createdAt: Date;
+  @Prop({ required: true })
+  refreshExpiresAt: Date; // refresh token expiry (with TTL)
 }
 
 export const TokenSchema = SchemaFactory.createForClass(Token);
 
-// Add index for better performance
-TokenSchema.index({ token: 1 });
+// Indexes
+TokenSchema.index({ accessToken: 1 });
+TokenSchema.index({ refreshToken: 1 });
 TokenSchema.index({ userId: 1 });
-TokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+TokenSchema.index({ refreshExpiresAt: 1 }, { expireAfterSeconds: 0 });

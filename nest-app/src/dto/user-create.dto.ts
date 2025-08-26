@@ -1,13 +1,13 @@
 // src/users/dto/user-create.dto.ts
-import { 
-  IsEmail, 
-  IsNotEmpty, 
-  IsString, 
-  MinLength, 
-  IsBoolean, 
-  IsIn, 
-  IsInt, 
-  Min, 
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  MinLength,
+  IsBoolean,
+  IsIn,
+  IsInt,
+  Min,
   Max,
   IsEnum
 } from 'class-validator';
